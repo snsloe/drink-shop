@@ -18,19 +18,19 @@ public class OrderPositionEntity {
     @JoinColumn(name = "drink_id", nullable = false)
     DrinkEntity drink;
     @Column(name = "quantity", nullable = false)
-    Byte quantity;
+    Integer quantity;
 
     public OrderPositionEntity() {
     }
 
-    public OrderPositionEntity(Long id, OrderEntity order, DrinkEntity drink, Byte quantity) {
+    public OrderPositionEntity(Long id, OrderEntity order, DrinkEntity drink, Integer quantity) {
         this.id = id;
         this.order = order;
         this.drink = drink;
         this.quantity = quantity;
     }
 
-    public OrderPositionEntity(OrderEntity order, DrinkEntity drink, Byte quantity) {
+    public OrderPositionEntity(OrderEntity order, DrinkEntity drink, Integer quantity) {
         this.order = order;
         this.drink = drink;
         this.quantity = quantity;
@@ -64,11 +64,11 @@ public class OrderPositionEntity {
         this.order = order;
     }
 
-    public Byte getQuantity() {
+    public Integer getQuantity() {
         return quantity;
     }
 
-    public void setQuantity(Byte quantity) {
+    public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 }

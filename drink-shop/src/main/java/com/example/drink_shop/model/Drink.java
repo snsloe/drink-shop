@@ -16,8 +16,9 @@ public class Drink {
     private final Manufacturer manufacturer;
     private final Country country;
     private Pack pack;
+    private Long reserve;
 
-    public Drink(Long id, DrinkType drinkType, String name, BigDecimal price, Double weight, Country country, Manufacturer manufacturer, Pack pack) {
+    public Drink(Long id, DrinkType drinkType, String name, BigDecimal price, Double weight, Country country, Manufacturer manufacturer, Pack pack, Long reserve) {
         this.id = id;
         this.drinkType = drinkType;
         this.name = name;
@@ -26,6 +27,7 @@ public class Drink {
         this.manufacturer = manufacturer;
         this.country = country;
         this.pack = pack;
+        this.reserve = reserve;
     }
 
     public Long getId() {
@@ -80,4 +82,11 @@ public class Drink {
         this.pack = pack;
     }
 
+    public Long getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(Long reserve) {
+        this.reserve = reserve;
+    }
 }

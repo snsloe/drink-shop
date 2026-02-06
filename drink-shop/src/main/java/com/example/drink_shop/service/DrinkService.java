@@ -24,8 +24,9 @@ public class DrinkService {
     }
 
     private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
-        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(), drinkEntity.getPrice(),
-                drinkEntity.getWeight(), drinkEntity.getCountry(), drinkEntity.getManufacturer(), drinkEntity.getPack());
+        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
+                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
+                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
     }
 
     public List<Drink> getAllDrinks() {
@@ -39,7 +40,8 @@ public class DrinkService {
     }
 
     public Drink getDrinkById(Long id) {
-        DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+        DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
         return mapEntityToDrink(drinkEntity);
     }
 
@@ -56,6 +58,9 @@ public class DrinkService {
         if (drinkToCreate.getWeight() <= 0) {
             throw new IllegalArgumentException("Weight must be more than 0.");
         }
+        if (drinkToCreate.getReserve() <= 0) {
+            throw new IllegalArgumentException("Reserve must be more than 0.");
+        }
         if (!(drinkToCreate.getManufacturer() instanceof Manufacturer)) {
             throw new IllegalArgumentException(drinkToCreate.getManufacturer() + " wrong Manufacturer.");
         }
@@ -66,22 +71,32 @@ public class DrinkService {
             throw new IllegalArgumentException(drinkToCreate.getPack() + " wrong Pack.");
         }
 
-        DrinkEntity drinkEntity = new DrinkEntity(null, drinkToCreate.getDrinkType(), drinkToCreate.getName(), drinkToCreate.getPrice(), drinkToCreate.getWeight(), drinkToCreate.getManufacturer(), drinkToCreate.getCountry(), drinkToCreate.getPack());
+        DrinkEntity drinkEntity = new DrinkEntity(null, drinkToCreate.getDrinkType(), drinkToCreate.getName(), drinkToCreate.getPrice(), drinkToCreate.getWeight(), drinkToCreate.getManufacturer(), drinkToCreate.getCountry(), drinkToCreate.getPack(), drinkToCreate.getReserve());
         DrinkEntity savedEntity = repository.save(drinkEntity);
         return mapEntityToDrink(savedEntity);
 
     }
 
     public String deleteDrink(Long id) {
-        DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
-        String message = "Drink " + drinkEntity.getName() + " with id = " + drinkEntity.getId();
-        repository.delete(drinkEntity);
-        return message + " was successfully deleted.";
+        DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+        if (repository.isDrinkNotInOrder(id)) {
+            repository.delete(drinkEntity);
+            return "Drink %s with id = %s was successfully deleted.".formatted(drinkEntity.getName(), drinkEntity.getId());
+        } else {
+            throw new IllegalArgumentException("Drink %s with id = %s cannot be deleted because it was ordered."
+                    .formatted(drinkEntity.getName(), drinkEntity.getId()));
+        }
     }
 
     public Drink updateDrink(Long id, Drink drinkToUpdate) {
-        DrinkEntity oldDrinkEntity = repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
-        DrinkEntity newDrinkEntity = new DrinkEntity(oldDrinkEntity.getId(), drinkToUpdate.getDrinkType(), drinkToUpdate.getName(), drinkToUpdate.getPrice(), drinkToUpdate.getWeight(), drinkToUpdate.getManufacturer(), drinkToUpdate.getCountry(), drinkToUpdate.getPack());
+        DrinkEntity oldDrinkEntity = repository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+
+        DrinkEntity newDrinkEntity = new DrinkEntity(oldDrinkEntity.getId(), drinkToUpdate.getDrinkType(),
+                drinkToUpdate.getName(), drinkToUpdate.getPrice(), drinkToUpdate.getWeight(), drinkToUpdate.getManufacturer(),
+                drinkToUpdate.getCountry(), drinkToUpdate.getPack(), drinkToUpdate.getReserve());
+
         DrinkEntity updatedEntity = repository.save(newDrinkEntity);
         return mapEntityToDrink(updatedEntity);
     }

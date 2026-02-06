@@ -51,7 +51,7 @@ public class OrderEntity {
         this.totalCost = BigDecimal.ZERO;
     }
 
-    public void createPosition(DrinkEntity drinkEntity, Byte quantity) {
+    public void createPosition(DrinkEntity drinkEntity, Integer quantity) {
         OrderPositionEntity positionEntity = new OrderPositionEntity(this, drinkEntity, quantity);
         this.cartDrinks.add(positionEntity);
         this.totalCost = this.totalCost.add(positionEntity.calculateCostPosition());

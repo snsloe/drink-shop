@@ -19,9 +19,9 @@ public class Order {
 
     public static class cartDrinkItem {
         private Long drinkId;
-        private Byte quantity;
+        private Integer quantity;
 
-        public cartDrinkItem(Long drinkId, Byte quantity) {
+        public cartDrinkItem(Long drinkId, Integer quantity) {
             this.drinkId = drinkId;
             this.quantity = quantity;
         }
@@ -36,11 +36,11 @@ public class Order {
             this.drinkId = drinkId;
         }
 
-        public Byte getQuantity() {
+        public Integer getQuantity() {
             return quantity;
         }
 
-        public void setQuantity(Byte quantity) {
+        public void setQuantity(Integer quantity) {
             this.quantity = quantity;
         }
     }

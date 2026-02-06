@@ -33,11 +33,13 @@ public class DrinkEntity {
     @Column(name = "pack", nullable = false)
     @Enumerated(EnumType.STRING)
     private Pack pack;
+    @Column(name = "reserve", nullable = false)
+    private Long reserve;
 
     public DrinkEntity() {
     }
 
-    public DrinkEntity(Long id, DrinkType drinkType, String name, BigDecimal price, Double weight, Manufacturer manufacturer, Country country, Pack pack) {
+    public DrinkEntity(Long id, DrinkType drinkType, String name, BigDecimal price, Double weight, Manufacturer manufacturer, Country country, Pack pack, Long reserve) {
         this.id = id;
         this.drinkType = drinkType;
         this.name = name;
@@ -46,6 +48,7 @@ public class DrinkEntity {
         this.manufacturer = manufacturer;
         this.country = country;
         this.pack = pack;
+        this.reserve = reserve;
     }
 
     public Long getId() {
@@ -110,5 +113,13 @@ public class DrinkEntity {
 
     public void setPack(Pack pack) {
         this.pack = pack;
+    }
+
+    public Long getReserve() {
+        return reserve;
+    }
+
+    public void setReserve(Long reserve) {
+        this.reserve = reserve;
     }
 }

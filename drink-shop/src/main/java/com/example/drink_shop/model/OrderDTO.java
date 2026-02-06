@@ -38,9 +38,9 @@ public class OrderDTO {
     @NotNull
     private String address;
     @NotNull
-    private Map<Long, Byte> cartDrinks;
+    private Map<Long, Integer> cartDrinks;
 
-    public OrderDTO(Long userId, String address, Map<Long, Byte> cartDrinks) {
+    public OrderDTO(Long userId, String address, Map<Long, Integer> cartDrinks) {
         this.userId = userId;
         this.address = address;
         this.cartDrinks = cartDrinks;
@@ -62,11 +62,11 @@ public class OrderDTO {
         this.address = address;
     }
 
-    public Map<Long, Byte> getCartDrinks() {
+    public Map<Long, Integer> getCartDrinks() {
         return cartDrinks;
     }
 
-    public void setCartDrinks(Map<Long, Byte> cartDrinks) {
+    public void setCartDrinks(Map<Long, Integer> cartDrinks) {
         this.cartDrinks = cartDrinks;
     }
 

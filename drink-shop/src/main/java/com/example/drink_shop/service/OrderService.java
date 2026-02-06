@@ -22,8 +22,8 @@ public class OrderService {
     }
 
     private Order mapEntityToOrder(OrderEntity orderEntity) {
-        return new Order(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()), orderEntity.getUserId(),
-                orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
+        return new Order(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()),
+                orderEntity.getUserId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
     }
 
     private void convertListToOrderPositionEntity(OrderEntity orderEntity, Order order) {
@@ -53,11 +53,12 @@ public class OrderService {
     }
 
     public Order getOrderBuId(Long id) {
-        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found order with id = %s".formatted(id)));
+        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found order with id = %s".formatted(id)));
         return mapEntityToOrder(orderEntity);
     }
 
-    // исправить
+    @Transactional
     public Order createOrder(OrderDTO orderToCreate) {
         if (orderToCreate.getId() != null) {
             throw new IllegalArgumentException("Id should be empty. It is filled in automatically.");
@@ -70,25 +71,42 @@ public class OrderService {
         }
 
         OrderEntity orderEntityToCreate = new OrderEntity(null, orderToCreate.getUserId(), orderToCreate.getAddress());
-        for (Map.Entry<Long, Byte> positionDTO : orderToCreate.getCartDrinks().entrySet()) {
-            DrinkEntity drinkEntity = drinkRepository.findById(positionDTO.getKey()).orElseThrow(() -> new EntityNotFoundException("Not found order with id = %s".formatted(positionDTO.getKey())));
-            Byte quantity = positionDTO.getValue();
+        for (Map.Entry<Long, Integer> positionDTO : orderToCreate.getCartDrinks().entrySet()) {
+            DrinkEntity drinkEntity = drinkRepository.findById(positionDTO.getKey()).orElseThrow(() ->
+                    new EntityNotFoundException("Not found order with id = %s".formatted(positionDTO.getKey())));
+            Integer quantity = positionDTO.getValue();
+            if (quantity > drinkEntity.getReserve()) {
+                throw new IllegalArgumentException("Drink %s with id = %s cannot be added to order quantity of %s. Reserve is %s."
+                        .formatted(drinkEntity.getName(), drinkEntity.getId(), quantity, drinkEntity.getReserve()));
+            }
+            drinkEntity.setReserve(drinkEntity.getReserve() - quantity);
+            drinkRepository.save(drinkEntity);
             orderEntityToCreate.createPosition(drinkEntity, quantity);
         }
         OrderEntity savedOrderEntity = orderRepository.save(orderEntityToCreate);
         return mapEntityToOrder(savedOrderEntity);
     }
 
-
+    @Transactional
     public Order updateOrder(Long id, OrderDTO orderToUpdate) {
-        OrderEntity oldOrderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found order with id = %s".formatted(id)));
+        OrderEntity oldOrderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found order with id = %s".formatted(id)));
+
         if (oldOrderEntity.getStatus() != Status.CREATED) {
-            throw new IllegalStateException("Order with status: %s must not be updated.".formatted(oldOrderEntity.getStatus()));
+            throw new IllegalStateException("Order with status: %s must not be updated."
+                    .formatted(oldOrderEntity.getStatus()));
         }
         OrderEntity orderEntityToUpdate = new OrderEntity(orderToUpdate.getUserId(), orderToUpdate.getAddress());
-        for (Map.Entry<Long, Byte> positionDTO : orderToUpdate.getCartDrinks().entrySet()) {
-            DrinkEntity drinkEntity = drinkRepository.findById(positionDTO.getKey()).orElseThrow(() -> new EntityNotFoundException("Not found order with id = %s".formatted(positionDTO.getKey())));
-            Byte quantity = positionDTO.getValue();
+        for (Map.Entry<Long, Integer> positionDTO : orderToUpdate.getCartDrinks().entrySet()) {
+            DrinkEntity drinkEntity = drinkRepository.findById(positionDTO.getKey()).orElseThrow(() ->
+                    new EntityNotFoundException("Not found order with id = %s".formatted(positionDTO.getKey())));
+
+            Integer quantity = positionDTO.getValue();
+            if (quantity > drinkEntity.getReserve()) {
+                throw new IllegalArgumentException("Drink %s with id = %s cannot be added to order quantity of %s. Reserve is %s."
+                        .formatted(drinkEntity.getName(), drinkEntity.getId(), quantity, drinkEntity.getReserve()));
+            }
+            drinkEntity.setReserve(drinkEntity.getReserve() - quantity);
             orderEntityToUpdate.createPosition(drinkEntity, quantity);
         }
         OrderEntity updatedOrderEntity = orderRepository.save(orderEntityToUpdate);
@@ -97,21 +115,26 @@ public class OrderService {
 
     @Transactional
     public String cancelOrder(Long id) {
-        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found order with id = %s".formatted(id)));
+        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found order with id = %s".formatted(id)));
+
         if (orderEntity.getStatus() == Status.CREATED) {
             orderEntity.setStatus(Status.CANCELED);
             //orderRepository.setStatus(id, Status.CANCELED);
             return "Order with id = " + orderEntity.getId() + " was successfully canceled.";
         } else if (orderEntity.getStatus() == Status.CANCELED) {
-            throw new IllegalStateException("Order with id = " + orderEntity.getId() + " was already canceled.");
+            throw new IllegalStateException("Order with id = %s was already canceled.".formatted(orderEntity.getId()));
         } else {
-            throw new IllegalStateException("Order with id = " + orderEntity.getId() + " cannot be canceled because its status:" + orderEntity.getStatus());
+            throw new IllegalStateException("Order with id = %s cannot be canceled because its status: %s."
+                    .formatted(orderEntity.getId(), orderEntity.getStatus()));
         }
     }
 
     @Transactional
     public String changeStatusToPaid(Long id) {
-        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+
         if (orderEntity.getStatus() == Status.PAID || orderEntity.getStatus() == Status.COMPLETED) {
             throw new IllegalStateException("Order with id = %s is already paid.".formatted(id));
         } else if (orderEntity.getStatus() == Status.CANCELED) {
@@ -126,7 +149,9 @@ public class OrderService {
 
     @Transactional
     public String changeStatusToCompleted(Long id) {
-        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+
         if (orderEntity.getStatus() == Status.COMPLETED || orderEntity.getStatus() == Status.DONE) {
             throw new IllegalStateException("Order with id = %s is already completed.".formatted(id));
         } else if (orderEntity.getStatus() == Status.CANCELED) {
@@ -141,7 +166,9 @@ public class OrderService {
 
     @Transactional
     public String changeStatusToDone(Long id) {
-        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+        OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
+
         if (orderEntity.getStatus() == Status.DONE) {
             throw new IllegalStateException("Order with id = %s is already done.".formatted(id));
         } else if (orderEntity.getStatus() == Status.CANCELED) {
