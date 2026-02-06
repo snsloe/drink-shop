@@ -36,7 +36,7 @@ public class DrinkEntity {
 
     public DrinkEntity() {
     }
-// Long, DrinkType, String, BigDecimal, Double, Manufacturer, Pack
+
     public DrinkEntity(Long id, DrinkType drinkType, String name, BigDecimal price, Double weight, Manufacturer manufacturer, Country country, Pack pack) {
         this.id = id;
         this.drinkType = drinkType;

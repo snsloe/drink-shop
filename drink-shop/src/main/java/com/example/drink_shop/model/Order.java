@@ -8,13 +8,9 @@ import java.util.List;
 
 public class Order {
 
-    //private DrinkService drinkService;
-
-
 
     private Long id;
-    // Map<Long, Byte> cartDrink; // <drinkId, quantity>
-    private List<cartDrinkItem> cartDrinks;
+    private List<cartDrinkItem> cartDrinks;     // <drinkId, quantity>
     private final Long userId;
     private LocalDateTime orderDateTime;
     private String address;
@@ -49,15 +45,6 @@ public class Order {
         }
     }
 
-//    public Order(Long id, List<cartDrinkItem> cartDrinks, Long userId, LocalDateTime orderDateTime, String address, Status status, BigDecimal totalCost) {
-//        this.id = id;
-//        this.cartDrinks = cartDrinks;
-//        this.userId = userId;
-//        this.orderDateTime = orderDateTime;
-//        this.address = address;
-//        this.status = status;
-////        calculateTotalCost();
-//    }
 
     public Order(Long id, List<cartDrinkItem> cartDrinks, Long userId, LocalDateTime orderDateTime, String address, Status status, BigDecimal totalCost) {
         this.id = id;
@@ -79,13 +66,10 @@ public class Order {
     }
 
     public BigDecimal getTotalCost() {
-//        calculateTotalCost();
         return totalCost;
     }
 
-//    public void setTotalCost(BigDecimal totalCost) {
-//        this.totalCost = totalCost;
-//    }
+
 
     public List<cartDrinkItem> getCartDrink() {
         return cartDrinks;

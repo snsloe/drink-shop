@@ -15,10 +15,7 @@ public class OrderEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
-    //@Column(name = "cart_drink", nullable = false)
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    //@JoinColumn(name = "cart_drink", nullable = false)
-    //private Map<Long, Byte> cartDrink; // <drinkId, quantity>
     private List<OrderPositionEntity> cartDrinks;
     @Column(name = "user_id", nullable = false)
     private Long userId;
@@ -34,17 +31,6 @@ public class OrderEntity {
 
     public OrderEntity() {
     }
-
-//    public OrderEntity(Long id, List<OrderPositionEntity> cartDrinks, Long userId, LocalDateTime orderDateTime, String address, Status status) {
-//        this.id = id;
-//        this.cartDrinks = cartDrinks;
-//        this.userId = userId;
-//        this.orderDateTime = orderDateTime;
-//        this.address = address;
-//        this.status = status;
-//        //this.totalCost = BigDecimal.ZERO;
-//    }
-
 
     public OrderEntity(Long id, Long userId, String address) {
         this.id = id;

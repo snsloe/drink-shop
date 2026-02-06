@@ -4,9 +4,7 @@ import com.example.drink_shop.model.*;
 import com.example.drink_shop.model.enumeration.Status;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;

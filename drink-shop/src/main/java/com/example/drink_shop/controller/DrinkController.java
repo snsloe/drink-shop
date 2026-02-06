@@ -35,7 +35,6 @@ public class DrinkController {
     }
 
     @PostMapping
-    // Spring автоматически переведет json в объект при помощи фреймворка jakson
     public ResponseEntity<Drink> createDrink(@RequestBody Drink drinkToCreate) {
         log.info("Called method createDrink.");
         System.out.println(drinkToCreate.getDrinkType());
