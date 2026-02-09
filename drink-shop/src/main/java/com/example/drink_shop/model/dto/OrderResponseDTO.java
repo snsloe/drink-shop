@@ -1,4 +1,4 @@
-package com.example.drink_shop.model.domain;
+package com.example.drink_shop.model.dto;
 
 import com.example.drink_shop.model.enumeration.Status;
 
@@ -6,9 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class Order {
-
-
+public class OrderResponseDTO {
     private Long id;
     private List<cartDrinkItem> cartDrinks;     // <drinkId, quantity>
     private final Long userId;
@@ -16,6 +14,7 @@ public class Order {
     private String address;
     private Status status;
     private BigDecimal totalCost;
+    private String message;
 
     public static class cartDrinkItem {
         private Long drinkId;
@@ -46,7 +45,7 @@ public class Order {
     }
 
 
-    public Order(Long id, List<cartDrinkItem> cartDrinks, Long userId, LocalDateTime orderDateTime, String address, Status status, BigDecimal totalCost) {
+    public OrderResponseDTO(Long id, List<cartDrinkItem> cartDrinks, Long userId, LocalDateTime orderDateTime, String address, Status status, BigDecimal totalCost) {
         this.id = id;
         this.cartDrinks = cartDrinks;
         this.userId = userId;
@@ -69,7 +68,13 @@ public class Order {
         return totalCost;
     }
 
+    public String getMessage() {
+        return message;
+    }
 
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public List<cartDrinkItem> getCartDrink() {
         return cartDrinks;

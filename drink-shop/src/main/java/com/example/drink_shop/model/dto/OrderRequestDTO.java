@@ -19,7 +19,7 @@ import java.util.Map;
 //  }
 //}
 
-public class OrderDTO {
+public class OrderRequestDTO {
 
     @Null(message = "Id should be empty. It is filled in automatically")
     private Long id;
@@ -39,7 +39,7 @@ public class OrderDTO {
     @NotNull
     private Map<Long, Integer> cartDrinks;
 
-    public OrderDTO(Long userId, String address, Map<Long, Integer> cartDrinks) {
+    public OrderRequestDTO(Long userId, String address, Map<Long, Integer> cartDrinks) {
         this.userId = userId;
         this.address = address;
         this.cartDrinks = cartDrinks;

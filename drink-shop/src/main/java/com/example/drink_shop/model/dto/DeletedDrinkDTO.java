@@ -50,14 +50,6 @@ public class DeletedDrinkDTO {
         this.id = id;
     }
 
-    public DrinkType getDrinkType() {
-        return drinkType;
-    }
-
-    public void setDrinkType(DrinkType drinkType) {
-        this.drinkType = drinkType;
-    }
-
     public String getName() {
         return name;
     }
@@ -66,51 +58,4 @@ public class DeletedDrinkDTO {
         this.name = name;
     }
 
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Double getWeight() {
-        return weight;
-    }
-
-    public void setWeight(Double weight) {
-        this.weight = weight;
-    }
-
-    public Manufacturer getManufacturer() {
-        return manufacturer;
-    }
-
-    public void setManufacturer(Manufacturer manufacturer) {
-        this.manufacturer = manufacturer;
-    }
-
-    public Country getCountry() {
-        return country;
-    }
-
-    public void setCountry(Country country) {
-        this.country = country;
-    }
-
-    public Pack getPack() {
-        return pack;
-    }
-
-    public void setPack(Pack pack) {
-        this.pack = pack;
-    }
-
-    public Long getReserve() {
-        return reserve;
-    }
-
-    public void setReserve(Long reserve) {
-        this.reserve = reserve;
-    }
 }

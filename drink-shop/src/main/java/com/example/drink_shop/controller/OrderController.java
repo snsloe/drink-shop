@@ -1,7 +1,7 @@
 package com.example.drink_shop.controller;
 
-import com.example.drink_shop.model.domain.Order;
-import com.example.drink_shop.model.dto.OrderDTO;
+import com.example.drink_shop.model.dto.OrderResponseDTO;
+import com.example.drink_shop.model.dto.OrderRequestDTO;
 import com.example.drink_shop.service.OrderService;
 import jakarta.validation.Valid;
 import org.slf4j.LoggerFactory;
@@ -25,49 +25,49 @@ public class OrderController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Order>> getAllOrders() {
+    public ResponseEntity<List<OrderResponseDTO>> getAllOrders() {
         log.info("Called method getAllOrders.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getAllOrders());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Order> getOrderBuId(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> getOrderBuId(@PathVariable Long id) {
         log.info("Called method getOrderById.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderBuId(id));
     }
 
     @PatchMapping("/{id}/cancel")
-    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> cancelOrder(@PathVariable Long id) {
         log.info("Called method cancel order.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.cancelOrder(id));
     }
 
     @PostMapping("/create")
-    public ResponseEntity<Order> createOrder(@RequestBody @Valid OrderDTO orderToCreate) {
+    public ResponseEntity<OrderResponseDTO> createOrder(@RequestBody @Valid OrderRequestDTO orderToCreate) {
         log.info("Called method createOrder");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.createOrder(orderToCreate));
     }
 
     @PatchMapping("/{id}/update")
-    public ResponseEntity<Order> updateOrder(@PathVariable Long id, @RequestBody OrderDTO orderToUpdate) {
+    public ResponseEntity<OrderResponseDTO> updateOrder(@PathVariable Long id, @RequestBody OrderRequestDTO orderToUpdate) {
         log.info("Called method updateOrder.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.updateOrder(id, orderToUpdate));
     }
 
     @PatchMapping("/{id}/pay")
-    public ResponseEntity<String> changeStatusToPaid(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> changeStatusToPaid(@PathVariable Long id) {
         log.info("Called method changeStatusToPaid.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.changeStatusToPaid(id));
     }
 
     @PatchMapping("/{id}/complete")
-    public ResponseEntity<String> changeStatusToCompleted(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> changeStatusToCompleted(@PathVariable Long id) {
         log.info("Called method changeStatusToCompleted.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.changeStatusToCompleted(id));
     }
 
     @PatchMapping("/{id}/deliver")
-    public ResponseEntity<String> changeStatusToDone(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> changeStatusToDone(@PathVariable Long id) {
         log.info("Called method changeStatusToDone.");
         return ResponseEntity.status(HttpStatus.OK).body(orderService.changeStatusToDone(id));
     }
