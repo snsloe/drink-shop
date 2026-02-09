@@ -1,10 +1,10 @@
 package com.example.drink_shop.service;
 
+import com.example.drink_shop.mapper.Mapper;
 import com.example.drink_shop.model.dto.OrderResponseDTO;
 import com.example.drink_shop.model.dto.OrderRequestDTO;
 import com.example.drink_shop.model.entity.DrinkEntity;
 import com.example.drink_shop.model.entity.OrderEntity;
-import com.example.drink_shop.model.entity.OrderPositionEntity;
 import com.example.drink_shop.model.enumeration.Status;
 import com.example.drink_shop.repository.DrinkRepository;
 import com.example.drink_shop.repository.OrderRepository;
@@ -21,17 +21,19 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final DrinkRepository drinkRepository;
+    private final Mapper mapper;
 
-    public OrderService(OrderRepository repository, DrinkRepository drinkRepository) {
+    public OrderService(OrderRepository repository, DrinkRepository drinkRepository, Mapper mapper) {
         this.orderRepository = repository;
         this.drinkRepository = drinkRepository;
+        this.mapper = mapper;
     }
 
     public List<OrderResponseDTO> getAllOrders() {
         List<OrderEntity> allOrderEntity = orderRepository.findAll();
         List<OrderResponseDTO> allOrders = new ArrayList<>();
         for (OrderEntity orderEntity: allOrderEntity) {
-            OrderResponseDTO order = mapEntityToOrderResponse(orderEntity);
+            OrderResponseDTO order = mapper.mapEntityToOrderResponse(orderEntity);
             allOrders.add(order);
         }
         return allOrders;
@@ -40,7 +42,7 @@ public class OrderService {
     public OrderResponseDTO getOrderBuId(Long id) {
         OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found order with id = %s".formatted(id)));
-        return mapEntityToOrderResponse(orderEntity);
+        return mapper.mapEntityToOrderResponse(orderEntity);
     }
 
     @Transactional
@@ -69,7 +71,7 @@ public class OrderService {
             orderEntityToCreate.createPosition(drinkEntity, quantity);
         }
         OrderEntity savedOrderEntity = orderRepository.save(orderEntityToCreate);
-        return mapEntityToOrderResponse(savedOrderEntity);
+        return mapper.mapEntityToOrderResponse(savedOrderEntity);
     }
 
     @Transactional
@@ -95,7 +97,7 @@ public class OrderService {
             orderEntityToUpdate.createPosition(drinkEntity, quantity);
         }
         OrderEntity updatedOrderEntity = orderRepository.save(orderEntityToUpdate);
-        return mapEntityToOrderResponse(updatedOrderEntity);
+        return mapper.mapEntityToOrderResponse(updatedOrderEntity);
     }
 
     @Transactional
@@ -106,7 +108,7 @@ public class OrderService {
         if (orderEntity.getStatus() == Status.CREATED) {
             orderEntity.setStatus(Status.CANCELED);
             //orderRepository.setStatus(id, Status.CANCELED);
-            OrderResponseDTO canceledOrderDTO = mapEntityToOrderResponse(orderEntity);
+            OrderResponseDTO canceledOrderDTO = mapper.mapEntityToOrderResponse(orderEntity);
             canceledOrderDTO.setMessage("Order with id = %s was successfully canceled.".formatted(orderEntity.getId()));
             return canceledOrderDTO;
         } else if (orderEntity.getStatus() == Status.CANCELED) {
@@ -130,7 +132,7 @@ public class OrderService {
             throw new IllegalStateException("Order with id = %s is already done.".formatted(id));
         }
         orderEntity.setStatus(Status.PAID);
-        OrderResponseDTO paidOrderDTO = mapEntityToOrderResponse(orderEntity);
+        OrderResponseDTO paidOrderDTO = mapper.mapEntityToOrderResponse(orderEntity);
         paidOrderDTO.setMessage("Order with id = %s was successfully paid.".formatted(id));
         //orderRepository.setStatus(id, Status.CANCELED);
         return paidOrderDTO;
@@ -149,7 +151,7 @@ public class OrderService {
             throw new IllegalStateException("Order with id = %s has not been paid yet.".formatted(id));
         }
         orderEntity.setStatus(Status.COMPLETED);
-        OrderResponseDTO completedOrderDTO = mapEntityToOrderResponse(orderEntity);
+        OrderResponseDTO completedOrderDTO = mapper.mapEntityToOrderResponse(orderEntity);
         completedOrderDTO.setMessage("Order with id = %s was successfully completed.".formatted(id));
         //orderRepository.setStatus(id, Status.CANCELED);
         return completedOrderDTO;
@@ -168,30 +170,9 @@ public class OrderService {
             throw new IllegalStateException("Order with id = %s has not been completed yet.".formatted(id));
         }
         orderEntity.setStatus(Status.DONE);
-        OrderResponseDTO doneOrderDTO = mapEntityToOrderResponse(orderEntity);
+        OrderResponseDTO doneOrderDTO = mapper.mapEntityToOrderResponse(orderEntity);
         doneOrderDTO.setMessage("Order with id = %s was successfully done.".formatted(id));
         //orderRepository.setStatus(id, Status.CANCELED);
         return doneOrderDTO;
-    }
-
-    private OrderResponseDTO mapEntityToOrderResponse(OrderEntity orderEntity) {
-        return new OrderResponseDTO(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()),
-                orderEntity.getUserId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
-    }
-
-    private void convertListToOrderPositionEntity(OrderEntity orderEntity, OrderResponseDTO order) {
-        List<OrderResponseDTO.cartDrinkItem> cartDrinks = order.getCartDrink();
-        for (OrderResponseDTO.cartDrinkItem position: cartDrinks) {
-            orderEntity.createPosition(drinkRepository.findById(position.getDrinkId()).orElseThrow(), position.getQuantity());
-        }
-    }
-
-    private List<OrderResponseDTO.cartDrinkItem> convertOrderPositionEntityToList(List<OrderPositionEntity> positionEntities) {
-        List<OrderResponseDTO.cartDrinkItem> cartDrinks = new ArrayList<>();
-        for (OrderPositionEntity positionEntity: positionEntities) {
-            OrderResponseDTO.cartDrinkItem position = new OrderResponseDTO.cartDrinkItem(positionEntity.getDrink().getId(), positionEntity.getQuantity());
-            cartDrinks.add(position);
-        }
-        return cartDrinks;
     }
 }

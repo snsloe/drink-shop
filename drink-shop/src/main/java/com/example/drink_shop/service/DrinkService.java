@@ -1,6 +1,6 @@
 package com.example.drink_shop.service;
 
-//import com.example.drink_shop.model.domain.Drink;
+import com.example.drink_shop.mapper.Mapper;
 import com.example.drink_shop.model.dto.DeletedDrinkDTO;
 import com.example.drink_shop.model.dto.DrinkDTO;
 import com.example.drink_shop.model.entity.DrinkEntity;
@@ -15,22 +15,23 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Service
 public class DrinkService {
 
     private final DrinkRepository repository;
+    private final Mapper mapper;
 
-    public DrinkService(DrinkRepository repository) {
+    public DrinkService(DrinkRepository repository, Mapper mapper) {
         this.repository = repository;
+        this.mapper = mapper;
     }
 
     public List<DrinkDTO> getAllDrinks() {
         List<DrinkEntity> drinkEntityList = repository.findAll();
         List<DrinkDTO> drinkList = new ArrayList<>();
         for (DrinkEntity drinkEntity: drinkEntityList) {
-            DrinkDTO drinkDTO = mapEntityToDrinkDTO(drinkEntity);
+            DrinkDTO drinkDTO = mapper.mapEntityToDrinkDTO(drinkEntity);
             drinkList.add(drinkDTO);
         }
         return drinkList;
@@ -39,7 +40,7 @@ public class DrinkService {
     public DrinkDTO getDrinkById(Long id) {
         DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
-        return mapEntityToDrinkDTO(drinkEntity);
+        return mapper.mapEntityToDrinkDTO(drinkEntity);
     }
 
     public DrinkDTO createDrink(DrinkDTO drinkToCreate) {
@@ -68,9 +69,9 @@ public class DrinkService {
             throw new IllegalArgumentException(drinkToCreate.getPack() + " wrong Pack.");
         }
 
-        DrinkEntity drinkEntity = mapDTOtoDrinkEntity(null, drinkToCreate);
+        DrinkEntity drinkEntity = mapper.mapDTOtoDrinkEntity(null, drinkToCreate);
         DrinkEntity savedEntity = repository.save(drinkEntity);
-        return mapEntityToDrinkDTO(savedEntity);
+        return mapper.mapEntityToDrinkDTO(savedEntity);
 
     }
 
@@ -79,7 +80,7 @@ public class DrinkService {
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
         if (repository.isDrinkNotInOrder(id)) {
             repository.delete(drinkEntity);
-            DeletedDrinkDTO deletedDrinkDTO = mapEntityToDeletedDrinkDTO(drinkEntity);
+            DeletedDrinkDTO deletedDrinkDTO = mapper.mapEntityToDeletedDrinkDTO(drinkEntity);
             deletedDrinkDTO.setMessage("Drink %s with id = %s was successfully deleted.".formatted(drinkEntity.getName(), drinkEntity.getId()));
             return deletedDrinkDTO;
         } else {
@@ -92,33 +93,10 @@ public class DrinkService {
         DrinkEntity oldDrinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
 
-        DrinkEntity newDrinkEntity = mapDTOtoDrinkEntity(oldDrinkEntity.getId(), drinkToUpdate);
+        DrinkEntity newDrinkEntity = mapper.mapDTOtoDrinkEntity(oldDrinkEntity.getId(), drinkToUpdate);
 
         DrinkEntity updatedEntity = repository.save(newDrinkEntity);
-        return mapEntityToDrinkDTO(updatedEntity);
+        return mapper.mapEntityToDrinkDTO(updatedEntity);
     }
 
-//    private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
-//        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
-//                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
-//                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
-//    }
-
-    private DrinkDTO mapEntityToDrinkDTO(DrinkEntity drinkEntity) {
-        return new DrinkDTO(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
-                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getManufacturer(), drinkEntity.getCountry(),
-                drinkEntity.getPack(), drinkEntity.getReserve());
-    }
-
-    private DeletedDrinkDTO mapEntityToDeletedDrinkDTO(DrinkEntity drinkEntity) {
-        return new DeletedDrinkDTO(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
-                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getManufacturer(), drinkEntity.getCountry(),
-                drinkEntity.getPack(), drinkEntity.getReserve());
-    }
-
-    private DrinkEntity mapDTOtoDrinkEntity(Object id, DrinkDTO drinkDTO) {
-        return new DrinkEntity((Long) id, drinkDTO.getDrinkType(), drinkDTO.getName(), drinkDTO.getPrice(), drinkDTO.getWeight(),
-                drinkDTO.getManufacturer(), drinkDTO.getCountry(), drinkDTO.getPack(), drinkDTO.getReserve());
-
-    }
 }
