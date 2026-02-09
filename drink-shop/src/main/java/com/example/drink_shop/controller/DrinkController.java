@@ -1,6 +1,8 @@
 package com.example.drink_shop.controller;
 
-import com.example.drink_shop.model.domain.Drink;
+//import com.example.drink_shop.model.domain.Drink;
+import com.example.drink_shop.model.dto.DeletedDrinkDTO;
+import com.example.drink_shop.model.dto.DrinkDTO;
 import com.example.drink_shop.service.DrinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,32 +24,32 @@ public class DrinkController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Drink>> getAllDrinks() {
+    public ResponseEntity<List<DrinkDTO>> getAllDrinks() {
         log.info("Called method getAllDrinks.");
         return ResponseEntity.status(HttpStatus.OK).body(drinkService.getAllDrinks());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Drink> getDrinkById(@PathVariable("id") Long id) {
+    public ResponseEntity<DrinkDTO> getDrinkById(@PathVariable("id") Long id) {
         log.info("Called method getDrinkById.");
         return ResponseEntity.status(HttpStatus.OK).body(drinkService.getDrinkById(id));
     }
 
     @PostMapping
-    public ResponseEntity<Drink> createDrink(@RequestBody Drink drinkToCreate) {
+    public ResponseEntity<DrinkDTO> createDrink(@RequestBody DrinkDTO drinkToCreateDTO) {
         log.info("Called method createDrink.");
-        System.out.println(drinkToCreate.getDrinkType());
-        return ResponseEntity.status(HttpStatus.OK).body(drinkService.createDrink(drinkToCreate));
+        System.out.println(drinkToCreateDTO.getDrinkType());
+        return ResponseEntity.status(HttpStatus.OK).body(drinkService.createDrink(drinkToCreateDTO));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteDrink(@PathVariable Long id) {
+    public ResponseEntity<DeletedDrinkDTO> deleteDrink(@PathVariable Long id) {
         log.info("Called method deleteDrink.");
         return ResponseEntity.status(HttpStatus.OK).body(drinkService.deleteDrink(id));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<Drink>updateDrink(@PathVariable Long id, @RequestBody Drink drinkToUpdate) {
+    public ResponseEntity<DrinkDTO>updateDrink(@PathVariable Long id, @RequestBody DrinkDTO drinkToUpdate) {
         log.info("Called method updateDrink.");
         return ResponseEntity.status(HttpStatus.OK).body(drinkService.updateDrink(id, drinkToUpdate));
     }

@@ -1,6 +1,8 @@
 package com.example.drink_shop.service;
 
-import com.example.drink_shop.model.domain.Drink;
+//import com.example.drink_shop.model.domain.Drink;
+import com.example.drink_shop.model.dto.DeletedDrinkDTO;
+import com.example.drink_shop.model.dto.DrinkDTO;
 import com.example.drink_shop.model.entity.DrinkEntity;
 import com.example.drink_shop.repository.DrinkRepository;
 import com.example.drink_shop.model.enumeration.Country;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DrinkService {
@@ -23,23 +26,23 @@ public class DrinkService {
         this.repository = repository;
     }
 
-    public List<Drink> getAllDrinks() {
+    public List<DrinkDTO> getAllDrinks() {
         List<DrinkEntity> drinkEntityList = repository.findAll();
-        List<Drink> drinkList = new ArrayList<Drink>();
+        List<DrinkDTO> drinkList = new ArrayList<>();
         for (DrinkEntity drinkEntity: drinkEntityList) {
-            Drink drink = mapEntityToDrink(drinkEntity);
-            drinkList.add(drink);
+            DrinkDTO drinkDTO = mapEntityToDrinkDTO(drinkEntity);
+            drinkList.add(drinkDTO);
         }
         return drinkList;
     }
 
-    public Drink getDrinkById(Long id) {
+    public DrinkDTO getDrinkById(Long id) {
         DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
-        return mapEntityToDrink(drinkEntity);
+        return mapEntityToDrinkDTO(drinkEntity);
     }
 
-    public Drink createDrink(Drink drinkToCreate) {
+    public DrinkDTO createDrink(DrinkDTO drinkToCreate) {
         if (drinkToCreate.getId() != null) {
             throw new IllegalArgumentException("Drink id must be empty.");
         }
@@ -65,39 +68,57 @@ public class DrinkService {
             throw new IllegalArgumentException(drinkToCreate.getPack() + " wrong Pack.");
         }
 
-        DrinkEntity drinkEntity = new DrinkEntity(null, drinkToCreate.getDrinkType(), drinkToCreate.getName(), drinkToCreate.getPrice(), drinkToCreate.getWeight(), drinkToCreate.getManufacturer(), drinkToCreate.getCountry(), drinkToCreate.getPack(), drinkToCreate.getReserve());
+        DrinkEntity drinkEntity = mapDTOtoDrinkEntity(null, drinkToCreate);
         DrinkEntity savedEntity = repository.save(drinkEntity);
-        return mapEntityToDrink(savedEntity);
+        return mapEntityToDrinkDTO(savedEntity);
 
     }
 
-    public String deleteDrink(Long id) {
+    public DeletedDrinkDTO deleteDrink(Long id) {
         DrinkEntity drinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
         if (repository.isDrinkNotInOrder(id)) {
             repository.delete(drinkEntity);
-            return "Drink %s with id = %s was successfully deleted.".formatted(drinkEntity.getName(), drinkEntity.getId());
+            DeletedDrinkDTO deletedDrinkDTO = mapEntityToDeletedDrinkDTO(drinkEntity);
+            deletedDrinkDTO.setMessage("Drink %s with id = %s was successfully deleted.".formatted(drinkEntity.getName(), drinkEntity.getId()));
+            return deletedDrinkDTO;
         } else {
             throw new IllegalArgumentException("Drink %s with id = %s cannot be deleted because it was ordered."
                     .formatted(drinkEntity.getName(), drinkEntity.getId()));
         }
     }
 
-    public Drink updateDrink(Long id, Drink drinkToUpdate) {
+    public DrinkDTO updateDrink(Long id, DrinkDTO drinkToUpdate) {
         DrinkEntity oldDrinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
 
-        DrinkEntity newDrinkEntity = new DrinkEntity(oldDrinkEntity.getId(), drinkToUpdate.getDrinkType(),
-                drinkToUpdate.getName(), drinkToUpdate.getPrice(), drinkToUpdate.getWeight(), drinkToUpdate.getManufacturer(),
-                drinkToUpdate.getCountry(), drinkToUpdate.getPack(), drinkToUpdate.getReserve());
+        DrinkEntity newDrinkEntity = mapDTOtoDrinkEntity(oldDrinkEntity.getId(), drinkToUpdate);
 
         DrinkEntity updatedEntity = repository.save(newDrinkEntity);
-        return mapEntityToDrink(updatedEntity);
+        return mapEntityToDrinkDTO(updatedEntity);
     }
 
-    private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
-        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
-                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
-                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
+//    private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
+//        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
+//                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
+//                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
+//    }
+
+    private DrinkDTO mapEntityToDrinkDTO(DrinkEntity drinkEntity) {
+        return new DrinkDTO(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
+                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getManufacturer(), drinkEntity.getCountry(),
+                drinkEntity.getPack(), drinkEntity.getReserve());
+    }
+
+    private DeletedDrinkDTO mapEntityToDeletedDrinkDTO(DrinkEntity drinkEntity) {
+        return new DeletedDrinkDTO(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
+                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getManufacturer(), drinkEntity.getCountry(),
+                drinkEntity.getPack(), drinkEntity.getReserve());
+    }
+
+    private DrinkEntity mapDTOtoDrinkEntity(Object id, DrinkDTO drinkDTO) {
+        return new DrinkEntity((Long) id, drinkDTO.getDrinkType(), drinkDTO.getName(), drinkDTO.getPrice(), drinkDTO.getWeight(),
+                drinkDTO.getManufacturer(), drinkDTO.getCountry(), drinkDTO.getPack(), drinkDTO.getReserve());
+
     }
 }
