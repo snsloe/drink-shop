@@ -1,6 +1,6 @@
 package com.example.drink_shop.controller;
 
-import com.example.drink_shop.model.Drink;
+import com.example.drink_shop.model.domain.Drink;
 import com.example.drink_shop.service.DrinkService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,9 +14,8 @@ import java.util.List;
 @RequestMapping("/drink")
 public class DrinkController {
 
-    public final DrinkService drinkService;
-
     private static final Logger log = LoggerFactory.getLogger(DrinkController.class);
+    private final DrinkService drinkService;
 
     public DrinkController(DrinkService drinkService) {
         this.drinkService = drinkService;

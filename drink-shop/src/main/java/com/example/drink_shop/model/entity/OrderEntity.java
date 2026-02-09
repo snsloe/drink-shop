@@ -1,4 +1,4 @@
-package com.example.drink_shop.model;
+package com.example.drink_shop.model.entity;
 
 import com.example.drink_shop.model.enumeration.Status;
 import jakarta.persistence.*;

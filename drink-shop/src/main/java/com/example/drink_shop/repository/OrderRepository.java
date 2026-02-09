@@ -1,11 +1,7 @@
-package com.example.drink_shop.model;
+package com.example.drink_shop.repository;
 
-import com.example.drink_shop.model.enumeration.Status;
+import com.example.drink_shop.model.entity.OrderEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.PathVariable;
 
 public interface OrderRepository extends JpaRepository<OrderEntity, Long> {
 

@@ -1,7 +1,7 @@
 package com.example.drink_shop.controller;
 
-import com.example.drink_shop.model.Order;
-import com.example.drink_shop.model.OrderDTO;
+import com.example.drink_shop.model.domain.Order;
+import com.example.drink_shop.model.dto.OrderDTO;
 import com.example.drink_shop.service.OrderService;
 import jakarta.validation.Valid;
 import org.slf4j.LoggerFactory;

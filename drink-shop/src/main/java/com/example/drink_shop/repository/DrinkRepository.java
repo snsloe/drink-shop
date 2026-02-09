@@ -1,7 +1,7 @@
-package com.example.drink_shop.model;
+package com.example.drink_shop.repository;
 
+import com.example.drink_shop.model.entity.DrinkEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 

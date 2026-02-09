@@ -1,4 +1,4 @@
-package com.example.drink_shop.model;
+package com.example.drink_shop.model.domain;
 
 import com.example.drink_shop.model.enumeration.Status;
 
@@ -106,17 +106,5 @@ public class Order {
     public void setStatus(Status status) {
         this.status = status;
     }
-
-//    private void calculateTotalCost() {
-//        BigDecimal totalCost = BigDecimal.valueOf(0);
-//        for (cartDrinkItem position: cartDrinks) {
-//            Drink drink = drinkService.getDrinkById(position.drinkId);
-//            BigDecimal price = drink.getPrice();
-//            Byte quantity = position.quantity;
-//            totalCost = totalCost.add(price.multiply(BigDecimal.valueOf(quantity)));
-//        }
-//        this.totalCost = totalCost;
-//    }
-
 
 }

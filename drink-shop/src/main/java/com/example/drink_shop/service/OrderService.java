@@ -1,7 +1,13 @@
 package com.example.drink_shop.service;
 
-import com.example.drink_shop.model.*;
+import com.example.drink_shop.model.domain.Order;
+import com.example.drink_shop.model.dto.OrderDTO;
+import com.example.drink_shop.model.entity.DrinkEntity;
+import com.example.drink_shop.model.entity.OrderEntity;
+import com.example.drink_shop.model.entity.OrderPositionEntity;
 import com.example.drink_shop.model.enumeration.Status;
+import com.example.drink_shop.repository.DrinkRepository;
+import com.example.drink_shop.repository.OrderRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
@@ -19,27 +25,6 @@ public class OrderService {
     public OrderService(OrderRepository repository, DrinkRepository drinkRepository) {
         this.orderRepository = repository;
         this.drinkRepository = drinkRepository;
-    }
-
-    private Order mapEntityToOrder(OrderEntity orderEntity) {
-        return new Order(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()),
-                orderEntity.getUserId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
-    }
-
-    private void convertListToOrderPositionEntity(OrderEntity orderEntity, Order order) {
-        List<Order.cartDrinkItem> cartDrinks = order.getCartDrink();
-         for (Order.cartDrinkItem position: cartDrinks) {
-             orderEntity.createPosition(drinkRepository.findById(position.getDrinkId()).orElseThrow(), position.getQuantity());
-         }
-    }
-
-    private List<Order.cartDrinkItem> convertOrderPositionEntityToList(List<OrderPositionEntity> positionEntities) {
-        List<Order.cartDrinkItem> cartDrinks = new ArrayList<>();
-        for (OrderPositionEntity positionEntity: positionEntities) {
-            Order.cartDrinkItem position = new Order.cartDrinkItem(positionEntity.getDrink().getId(), positionEntity.getQuantity());
-            cartDrinks.add(position);
-        }
-        return cartDrinks;
     }
 
     public List<Order> getAllOrders() {
@@ -179,5 +164,26 @@ public class OrderService {
         orderEntity.setStatus(Status.DONE);
         //orderRepository.setStatus(id, Status.CANCELED);
         return "Order with id = %s was successfully done.".formatted(id);
+    }
+
+    private Order mapEntityToOrder(OrderEntity orderEntity) {
+        return new Order(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()),
+                orderEntity.getUserId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
+    }
+
+    private void convertListToOrderPositionEntity(OrderEntity orderEntity, Order order) {
+        List<Order.cartDrinkItem> cartDrinks = order.getCartDrink();
+        for (Order.cartDrinkItem position: cartDrinks) {
+            orderEntity.createPosition(drinkRepository.findById(position.getDrinkId()).orElseThrow(), position.getQuantity());
+        }
+    }
+
+    private List<Order.cartDrinkItem> convertOrderPositionEntityToList(List<OrderPositionEntity> positionEntities) {
+        List<Order.cartDrinkItem> cartDrinks = new ArrayList<>();
+        for (OrderPositionEntity positionEntity: positionEntities) {
+            Order.cartDrinkItem position = new Order.cartDrinkItem(positionEntity.getDrink().getId(), positionEntity.getQuantity());
+            cartDrinks.add(position);
+        }
+        return cartDrinks;
     }
 }

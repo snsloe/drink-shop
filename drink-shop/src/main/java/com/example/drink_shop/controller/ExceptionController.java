@@ -1,5 +1,6 @@
 package com.example.drink_shop.controller;
 
+import com.example.drink_shop.model.dto.ErrorDTO;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,8 +48,3 @@ public class ExceptionController {
 
 
 
-record ErrorDTO(
-        String errorMessage,
-        String descriptionError,
-        LocalDateTime errorDateTime
-) {}

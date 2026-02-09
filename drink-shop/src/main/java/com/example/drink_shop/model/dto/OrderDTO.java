@@ -1,4 +1,4 @@
-package com.example.drink_shop.model;
+package com.example.drink_shop.model.dto;
 
 import com.example.drink_shop.model.enumeration.Status;
 import jakarta.validation.constraints.NotNull;
@@ -6,7 +6,6 @@ import jakarta.validation.constraints.Null;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 // пример:

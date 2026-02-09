@@ -1,8 +1,8 @@
 package com.example.drink_shop.service;
 
-import com.example.drink_shop.model.Drink;
-import com.example.drink_shop.model.DrinkEntity;
-import com.example.drink_shop.model.DrinkRepository;
+import com.example.drink_shop.model.domain.Drink;
+import com.example.drink_shop.model.entity.DrinkEntity;
+import com.example.drink_shop.repository.DrinkRepository;
 import com.example.drink_shop.model.enumeration.Country;
 import com.example.drink_shop.model.enumeration.DrinkType;
 import com.example.drink_shop.model.enumeration.Manufacturer;
@@ -21,12 +21,6 @@ public class DrinkService {
 
     public DrinkService(DrinkRepository repository) {
         this.repository = repository;
-    }
-
-    private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
-        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
-                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
-                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
     }
 
     public List<Drink> getAllDrinks() {
@@ -99,5 +93,11 @@ public class DrinkService {
 
         DrinkEntity updatedEntity = repository.save(newDrinkEntity);
         return mapEntityToDrink(updatedEntity);
+    }
+
+    private Drink mapEntityToDrink(DrinkEntity drinkEntity) {
+        return new Drink(drinkEntity.getId(), drinkEntity.getDrinkType(), drinkEntity.getName(),
+                drinkEntity.getPrice(), drinkEntity.getWeight(), drinkEntity.getCountry(),
+                drinkEntity.getManufacturer(), drinkEntity.getPack(), drinkEntity.getReserve());
     }
 }
