@@ -17,8 +17,9 @@ public class OrderEntity {
     private Long id;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderPositionEntity> cartDrinks;
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private UserEntity user;
     @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDateTime;
     @Column(name = "address", nullable = false)
@@ -32,19 +33,19 @@ public class OrderEntity {
     public OrderEntity() {
     }
 
-    public OrderEntity(Long id, Long userId, String address) {
+    public OrderEntity(Long id, UserEntity user, String address) {
         this.id = id;
         this.cartDrinks = new ArrayList<>();
-        this.userId = userId;
+        this.user = user;
         this.orderDateTime = LocalDateTime.now();
         this.address = address;
         this.status = Status.CREATED;
         this.totalCost = BigDecimal.ZERO;
     }
 
-    public OrderEntity(Long userId, String address) {
+    public OrderEntity(UserEntity user, String address) {
         this.cartDrinks = new ArrayList<>();
-        this.userId = userId;
+        this.user = user;
         this.orderDateTime = LocalDateTime.now();
         this.address = address;
         this.status = Status.CREATED;
@@ -74,12 +75,12 @@ public class OrderEntity {
         this.cartDrinks = cartDrinks;
     }
 
-    public Long getUserId() {
-        return userId;
+    public UserEntity getUserId() {
+        return user;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setUserId(UserEntity user) {
+        this.user = user;
     }
 
     public LocalDateTime getOrderDateTime() {

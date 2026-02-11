@@ -1,5 +1,6 @@
 package com.example.drink_shop.model.dto;
 
+import com.example.drink_shop.model.entity.UserEntity;
 import com.example.drink_shop.model.enumeration.Status;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -33,23 +34,23 @@ public class OrderRequestDTO {
 
 
     @NotNull
-    private Long userId;
+    private UserEntity userId;
     @NotNull
     private String address;
     @NotNull
     private Map<Long, Integer> cartDrinks;
 
-    public OrderRequestDTO(Long userId, String address, Map<Long, Integer> cartDrinks) {
+    public OrderRequestDTO(UserEntity userId, String address, Map<Long, Integer> cartDrinks) {
         this.userId = userId;
         this.address = address;
         this.cartDrinks = cartDrinks;
     }
 
-    public Long getUserId() {
+    public UserEntity getUserId() {
         return userId;
     }
 
-    public void setUserId(Long userId) {
+    public void setUserId(UserEntity userId) {
         this.userId = userId;
     }
 
