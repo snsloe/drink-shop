@@ -39,7 +39,7 @@ public class OrderService {
         return allOrders;
     }
 
-    public OrderResponseDTO getOrderBuId(Long id) {
+    public OrderResponseDTO getOrderById(Long id) {
         OrderEntity orderEntity = orderRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found order with id = %s".formatted(id)));
         return mapper.mapEntityToOrderResponse(orderEntity);

@@ -31,9 +31,9 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<OrderResponseDTO> getOrderBuId(@PathVariable Long id) {
+    public ResponseEntity<OrderResponseDTO> getOrderById(@PathVariable Long id) {
         log.info("Called method getOrderById.");
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderBuId(id));
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.getOrderById(id));
     }
 
     @PatchMapping("/{id}/cancel")

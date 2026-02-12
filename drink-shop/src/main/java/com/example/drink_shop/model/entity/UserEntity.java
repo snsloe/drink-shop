@@ -19,16 +19,16 @@ public class UserEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Role role;
-//    @NotNull
-//    private String address;
+    @NotNull
+    private String address;
 
-    public UserEntity(Long id, String name, String phoneNumber, String password, Role role/*, String address*/) {
+    public UserEntity(Long id, String name, String phoneNumber, String password, Role role, String address) {
         this.id = id;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.password = password;
         this.role = role;
-        //this.address = address;
+        this.address = address;
     }
 
     public Long getId() {
@@ -71,11 +71,11 @@ public class UserEntity {
         this.role = role;
     }
 
-//    public String getAddress() {
-//        return address;
-//    }
-//
-//    public void setAddress(String address) {
-//        this.address = address;
-//    }
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
 }
