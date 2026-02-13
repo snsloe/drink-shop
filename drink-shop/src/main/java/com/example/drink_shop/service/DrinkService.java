@@ -93,6 +93,31 @@ public class DrinkService {
         DrinkEntity oldDrinkEntity = repository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Not found drink with id = %s".formatted(id)));
 
+        if (drinkToUpdate.getId() != null) {
+            throw new IllegalArgumentException("Drink id must be empty.");
+        }
+        if (!(drinkToUpdate.getDrinkType() instanceof DrinkType)) {
+            throw new IllegalArgumentException(drinkToUpdate.getDrinkType() + " wrong DrinkType.");
+        }
+        if (drinkToUpdate.getPrice().compareTo(BigDecimal.ZERO) != 1) {
+            throw new IllegalArgumentException("Price must be more than 0.");
+        }
+        if (drinkToUpdate.getWeight() <= 0) {
+            throw new IllegalArgumentException("Weight must be more than 0.");
+        }
+        if (drinkToUpdate.getReserve() <= 0) {
+            throw new IllegalArgumentException("Reserve must be more than 0.");
+        }
+        if (!(drinkToUpdate.getManufacturer() instanceof Manufacturer)) {
+            throw new IllegalArgumentException(drinkToUpdate.getManufacturer() + " wrong Manufacturer.");
+        }
+        if (!(drinkToUpdate.getCountry() instanceof Country)) {
+            throw new IllegalArgumentException(drinkToUpdate.getCountry() + " wrong Country.");
+        }
+        if (!(drinkToUpdate.getPack() instanceof Pack)) {
+            throw new IllegalArgumentException(drinkToUpdate.getPack() + " wrong Pack.");
+        }
+
         DrinkEntity newDrinkEntity = mapper.mapDTOtoDrinkEntity(oldDrinkEntity.getId(), drinkToUpdate);
 
         DrinkEntity updatedEntity = repository.save(newDrinkEntity);

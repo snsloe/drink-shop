@@ -1,10 +1,13 @@
 package com.example.drink_shop.service;
 
+import com.example.drink_shop.mapper.Mapper;
 import com.example.drink_shop.model.dto.UserDTO;
 import com.example.drink_shop.model.entity.UserEntity;
 import com.example.drink_shop.model.enumeration.Role;
 import com.example.drink_shop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,14 +16,17 @@ import java.util.List;
 @Service
 public class UserService  {
     private final UserRepository userRepository;
+    private final Mapper mapper;
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, Mapper mapper) {
         this.userRepository = userRepository;
+        this.mapper = mapper;
     }
 
     public UserDTO getUserById(Long id) {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found user with id = %s.".formatted(id)));
-        return mapUserEntityToUserDTO(userEntity);
+        return mapper.mapUserEntityToUserDTO(userEntity);
 
     }
 
@@ -28,31 +34,48 @@ public class UserService  {
         List<UserEntity> userEntityList = userRepository.findAll();
         List<UserDTO> userList = new ArrayList<>();
         for (UserEntity entity: userEntityList) {
-            UserDTO user = mapUserEntityToUserDTO(entity);
+            UserDTO user = mapper.mapUserEntityToUserDTO(entity);
             userList.add(user);
         }
         return userList;
     }
 
-    private UserDTO mapUserEntityToUserDTO(UserEntity userEntity) {
-        return new UserDTO(userEntity.getId(), userEntity.getName(), userEntity.getPhoneNumber(), userEntity.getPassword(), userEntity.getRole(), userEntity.getAddress());
-    }
-
-    private UserEntity mapUserDTOtoEntity(UserDTO userDTO) {
-        return new UserEntity(null, userDTO.getName(), userDTO.getPhoneNumber(), userDTO.getPassword(), userDTO.getRole(), userDTO.getAddress());
-    }
-
-    public UserDTO createUser(UserDTO userDTO) {
-        if (userDTO.getId() != null) {
+    public UserDTO createUser(UserDTO userToCreate) {
+        if (userToCreate.getId() != null) {
             throw new IllegalArgumentException("Id should be empty. It is filled automatically.");
         }
-        if (userDTO.getPassword().length() < 8) {
+        if (userToCreate.getPassword().length() < 8) {
             throw new IllegalArgumentException("The password must be longer than 8 characters long.");
         }
-        if (!(userDTO.getRole() instanceof Role)) {
+        if (!(userToCreate.getRole() instanceof Role)) {
             throw new IllegalArgumentException("Wrong role.");
         }
-        UserEntity savedEntity = userRepository.save(mapUserDTOtoEntity(userDTO));
-        return mapUserEntityToUserDTO(savedEntity);
+        UserEntity savedEntity = userRepository.save(mapper.mapUserDTOtoEntity(userToCreate));
+        return mapper.mapUserEntityToUserDTO(savedEntity);
+    }
+
+    public UserDTO updateUser(Long id, UserDTO userToUpdate) {
+        UserEntity oldUserEntity = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found user with id = %s.".formatted(id)));
+        if (userToUpdate.getId() != null) {
+            throw new IllegalArgumentException("Id should be empty. It is filled automatically.");
+        }
+        if (userToUpdate.getPassword().length() < 8) {
+            throw new IllegalArgumentException("The password must be longer than 8 characters long.");
+        }
+        if (!(userToUpdate.getRole() instanceof Role)) {
+            throw new IllegalArgumentException("Wrong role.");
+        }
+        UserEntity entityToUpdate = new UserEntity(oldUserEntity.getId(), userToUpdate.getName(), userToUpdate.getPhoneNumber(), userToUpdate.getPassword(), userToUpdate.getRole(), userToUpdate.getAddress());
+        UserEntity savedEntity = userRepository.save(entityToUpdate);
+        return mapper.mapUserEntityToUserDTO(savedEntity);
+    }
+
+
+    public UserDTO deleteUser(Long id) {
+        UserEntity entityToDelete = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Not found user with id = %s.".formatted(id)));
+        UserDTO deletedUser = mapper.mapUserEntityToUserDTO(entityToDelete);
+        userRepository.delete(entityToDelete);
+        log.info("User with id = %s was successfully deleted.".formatted(id));
+        return deletedUser;
     }
 }

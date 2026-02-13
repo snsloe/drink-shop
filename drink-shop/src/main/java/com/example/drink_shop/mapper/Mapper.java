@@ -3,9 +3,11 @@ package com.example.drink_shop.mapper;
 import com.example.drink_shop.model.dto.DeletedDrinkDTO;
 import com.example.drink_shop.model.dto.DrinkDTO;
 import com.example.drink_shop.model.dto.OrderResponseDTO;
+import com.example.drink_shop.model.dto.UserDTO;
 import com.example.drink_shop.model.entity.DrinkEntity;
 import com.example.drink_shop.model.entity.OrderEntity;
 import com.example.drink_shop.model.entity.OrderPositionEntity;
+import com.example.drink_shop.model.entity.UserEntity;
 import com.example.drink_shop.repository.DrinkRepository;
 import org.springframework.stereotype.Component;
 
@@ -36,7 +38,7 @@ public class Mapper {
 
     public OrderResponseDTO mapEntityToOrderResponse(OrderEntity orderEntity) {
         return new OrderResponseDTO(orderEntity.getId(), convertOrderPositionEntityToList(orderEntity.getCartDrinks()),
-                orderEntity.getUserId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
+                orderEntity.getUserId().getId(), orderEntity.getOrderDateTime(), orderEntity.getAddress(), orderEntity.getStatus(), orderEntity.getTotalCost());
     }
 
     public void convertListToOrderPositionEntity(OrderEntity orderEntity, OrderResponseDTO order) {
@@ -54,4 +56,13 @@ public class Mapper {
         }
         return cartDrinks;
     }
+
+    public UserDTO mapUserEntityToUserDTO(UserEntity userEntity) {
+        return new UserDTO(userEntity.getId(), userEntity.getName(), userEntity.getPhoneNumber(), userEntity.getPassword(), userEntity.getRole(), userEntity.getAddress());
+    }
+
+    public UserEntity mapUserDTOtoEntity(UserDTO userDTO) {
+        return new UserEntity(null, userDTO.getName(), userDTO.getPhoneNumber(), userDTO.getPassword(), userDTO.getRole(), userDTO.getAddress());
+    }
+
 }

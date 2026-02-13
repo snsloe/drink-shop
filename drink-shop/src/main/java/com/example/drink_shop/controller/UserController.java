@@ -34,8 +34,20 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userToCreate) {
         log.info("Called method createUser");
-        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(userDTO));
+        return ResponseEntity.status(HttpStatus.OK).body(userService.createUser(userToCreate));
+    }
+
+    @PatchMapping("/{id}/update")
+    public ResponseEntity<UserDTO> updateUser(@PathVariable Long id, @RequestBody UserDTO userToUpdate) {
+        log.info("Called method updateUser");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.updateUser(id, userToUpdate));
+    }
+
+    @DeleteMapping("/{id}/delete")
+    public ResponseEntity<UserDTO> deleteUser(@PathVariable Long id) {
+        log.info("Called method deleteUser");
+        return ResponseEntity.status(HttpStatus.OK).body(userService.deleteUser(id));
     }
 }
